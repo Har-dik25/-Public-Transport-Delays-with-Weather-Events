@@ -46,12 +46,24 @@ def run_forecasting():
     forecast_steps = 7
     forecast = fitted_model.forecast(forecast_steps)
     
-    # 5. Prepare Output DataFrame
-    historical_df = daily_delays.reset_index().rename(columns={'index': 'date', 'delay_minutes': 'delay'})
-    historical_df['type'] = 'Historical'
+    # 5. Shift Dates to Current Year (2026) for Portfolio Realism
+    today = pd.Timestamp.now().normalize()
+    
+    # Shift forecast dates to start from "tomorrow"
+    shifted_forecast_dates = pd.date_range(start=today + pd.Timedelta(days=1), periods=forecast_steps, freq='D')
+    
+    # Shift historical dates backwards from "today"
+    hist_length = len(daily_delays)
+    shifted_hist_dates = pd.date_range(end=today, periods=hist_length, freq='D')
+    
+    historical_df = pd.DataFrame({
+        'date': shifted_hist_dates,
+        'delay': daily_delays['delay_minutes'].values,
+        'type': 'Historical'
+    })
     
     forecast_df = pd.DataFrame({
-        'date': forecast.index,
+        'date': shifted_forecast_dates,
         'delay': forecast.values,
         'type': 'Forecast'
     })

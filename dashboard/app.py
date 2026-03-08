@@ -32,24 +32,36 @@ st.markdown("""
 <style>
     /* Global Font & Background */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-    html, body, [class*="css"]  {
+    
+    /* Enforce Dark Text Globally to fix Dark Mode / Light Mode clashes */
+    html, body, [class*="css"], .stMarkdown, .stText {
         font-family: 'Inter', sans-serif;
+        color: #1e293b !important;
     }
+    
     /* Animations */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .stApp {
-        background-color: #f4f7f6;
+        background-color: #f8fafc; /* Very light cool gray */
         animation: fadeIn 0.6s ease-out forwards;
+    }
+    
+    /* Main Headers */
+    h1, h2, h3 {
+        color: #0f172a !important;
     }
     
     /* Sidebar Upgrade */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
-        border-right: 1px solid #eef2f6;
+        border-right: 1px solid #e2e8f0;
         box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+    }
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {
+        color: #475569 !important;
     }
     
     /* Hero Banner */
@@ -82,20 +94,28 @@ st.markdown("""
         margin-bottom: 0.5rem;
     }
     .hero-banner .sub-header {
-        color: #334155;
-        font-weight: 500;
+        color: #1e293b !important;
+        font-weight: 600;
         margin-bottom: 0;
         font-size: 1.3rem;
     }
 
     /* Metric Cards (Native Streamlit override) */
     div[data-testid="metric-container"] {
-        background: white;
-        border: 1px solid #e2e8f0;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 12px;
         padding: 1.2rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    div[data-testid="metric-container"] label {
+        color: #64748b !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
+        color: #0f172a !important;
+        font-weight: 800 !important;
     }
     div[data-testid="metric-container"]:hover {
         transform: translateY(-3px);
@@ -111,11 +131,20 @@ st.markdown("""
         margin: 1rem 0;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
+    .info-card h4 {
+        color: #0f172a !important;
+        font-weight: 700;
+    }
+    .info-card p {
+        color: #334155 !important;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
 
     /* 7-Day Forecast Cards */
     .forecast-card {
         background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-        border: 1px solid #e2e8f0;
+        border: 1px solid #cbd5e1;
         border-top: 4px solid #f97316;
         border-radius: 10px;
         padding: 1.2rem 0.5rem;
@@ -128,16 +157,17 @@ st.markdown("""
     }
     .forecast-day {
         font-size: 0.9rem;
-        color: #64748b;
-        font-weight: 600;
+        color: #334155 !important;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
     .forecast-val {
         font-size: 1.8rem;
-        color: #f97316;
+        color: #ea580c !important; /* darker orange for contrast */
         font-weight: 800;
         margin: 0.5rem 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
 
     /* Buttons */
@@ -168,12 +198,26 @@ st.markdown("""
         border: 1px solid transparent;
         border-bottom: none;
     }
+    .stTabs [data-baseweb="tab"] p {
+        color: #64748b !important;
+        font-weight: 500;
+    }
     .stTabs [aria-selected="true"] {
-        background-color: white;
-        border-color: #e2e8f0;
-        border-bottom-color: white;
-        font-weight: 600;
+        background-color: white !important;
+        border-color: #e2e8f0 !important;
+        border-bottom-color: white !important;
+    }
+    .stTabs [aria-selected="true"] p {
+        font-weight: 700 !important;
         color: #4f46e5 !important;
+    }
+    
+    /* Plotly Chart background override */
+    .js-plotly-plot .plotly .bg {
+        fill: transparent !important;
+    }
+    .js-plotly-plot .plotly .main-svg {
+        background: transparent !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -266,9 +310,9 @@ st.sidebar.markdown("### 📅 Filters")
 
 date_range = st.sidebar.date_input(
     "Date Range",
-    value=(df["date"].min().date(), df["date"].max().date()),
+    value=(df["date"].min().date(), pd.Timestamp.now().date() + pd.Timedelta(days=7)),
     min_value=df["date"].min().date(),
-    max_value=df["date"].max().date()
+    max_value=pd.Timestamp.now().date() + pd.Timedelta(days=7)
 )
 
 if len(date_range) == 2:
