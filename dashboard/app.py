@@ -27,30 +27,123 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── Custom CSS ───────────────────────────────────────────────────
+# ─── Custom CSS & UI Polish ───────────────────────────────────────
 st.markdown("""
 <style>
+    /* Global Font & Background */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+    html, body, [class*="css"]  {
+        font-family: 'Inter', sans-serif;
+    }
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    
+    /* Main Headers */
     .main-header {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
-        padding: 1rem 0;
+        padding: 1.5rem 0 0.5rem 0;
+        margin-bottom: 0px;
     }
-    .metric-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        border-radius: 15px;
+    .sub-header {
+        text-align: center; 
+        color: #64748b; 
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 2rem;
+    }
+
+    /* Metric Cards (Native Streamlit override) */
+    div[data-testid="metric-container"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    div[data-testid="metric-container"]:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Custom HTML Info Cards */
+    .info-card {
+        background: white;
+        border-left: 5px solid #4f46e5;
+        border-radius: 8px;
         padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin: 1rem 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-    .stMetric > div {
-        background-color: #f8f9fa;
+
+    /* 7-Day Forecast Cards */
+    .forecast-card {
+        background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-top: 4px solid #f97316;
         border-radius: 10px;
-        padding: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 1.2rem 0.5rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+        transition: all 0.2s;
+    }
+    .forecast-card:hover {
+        transform: scale(1.03);
+    }
+    .forecast-day {
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .forecast-val {
+        font-size: 1.8rem;
+        color: #f97316;
+        font-weight: 800;
+        margin: 0.5rem 0;
+    }
+
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+        color: white;
+    }
+
+    /* Tabs Override */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 4px 4px 0 0;
+        padding: 10px 16px;
+        background-color: #f1f5f9;
+        border: 1px solid transparent;
+        border-bottom: none;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: white;
+        border-color: #e2e8f0;
+        border-bottom-color: white;
+        font-weight: 600;
+        color: #4f46e5 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -160,22 +253,29 @@ st.sidebar.markdown("- 🎉 Nager.Date Holidays")
 # ═══════════════════════════════════════════════════════════════════
 if page == "📊 Overview":
     st.markdown('<h1 class="main-header">🚍 Public Transport Delay Analyzer</h1>', unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #666; font-size: 1.1rem;'>Analyzing NYC MTA Bus Delays with Weather & Event Correlations</p>", unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Analyzing NYC MTA Bus Delays with Weather & Event Correlations</p>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="info-card">
+        <h4 style="margin-top:0;">📊 Network Health Overview</h4>
+        <p style="color:#64748b; margin-bottom:0;">Key performance indicators based on historical delay data, weather conditions, and city-wide events.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Key Metrics Row
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        st.metric("📋 Total Records", f"{len(filtered_df):,}")
+        st.metric("📋 Total Records", f"{len(filtered_df):,}", help="Total number of transit delay records evaluated")
     with col2:
-        st.metric("⏱ Avg Delay", f"{filtered_df['delay_minutes'].mean():.1f} min")
+        st.metric("⏱ Avg Delay", f"{filtered_df['delay_minutes'].mean():.1f} min", help="The average delay duration across all affected routes")
     with col3:
-        st.metric("🚨 Delayed >15min", f"{filtered_df['is_delayed'].mean()*100:.1f}%")
+        st.metric("🚨 Delayed >15min", f"{filtered_df['is_delayed'].mean()*100:.1f}%", help="Percentage of total trips delayed by more than 15 minutes")
     with col4:
-        st.metric("🌧 Bad Weather Days", f"{(filtered_df['weather_severity']>=3).sum():,}")
+        st.metric("🌧 Bad Weather Days", f"{(filtered_df['weather_severity']>=3).sum():,}", help="Number of days experiencing severe weather (Heavy Rain, Snow, Storms)")
     with col5:
-        st.metric("🎉 Event Days", f"{filtered_df['has_event'].sum():,}")
+        st.metric("🎉 Event Days", f"{filtered_df['has_event'].sum():,}", help="Number of days with significant local events (Sports, Concerts, Holidays)")
 
-    st.markdown("---")
+    st.markdown("<br/>", unsafe_allow_html=True)
 
     # Charts Row 1
     col1, col2 = st.columns(2)
@@ -382,26 +482,34 @@ elif page == "🔍 EDA Explorer":
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🔮 Predictions":
     st.markdown('<h1 class="main-header">🔮 Delay Prediction</h1>', unsafe_allow_html=True)
-    st.markdown("Enter conditions below to predict whether a bus will be delayed and by how much.")
+    st.markdown('<p class="sub-header">Enter conditions below to predict whether a bus will be delayed and by how much.</p>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="info-card" style="border-left-color: #ec4899;">
+        <h4 style="margin-top:0;">🤖 Machine Learning Inference</h4>
+        <p style="color:#64748b; margin-bottom:0;">Adjust the parameters below to run real-time predictions against the trained Random Forest and Gradient Boosting models.</p>
+    </div>
+    <br/>
+    """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.subheader("🕐 Time & Route")
+        st.markdown("### 🕐 Time & Route")
         hour = st.slider("Hour of Day", 5, 22, 8)
         is_weekend = st.selectbox("Weekend?", ["No", "Yes"])
         is_rush = st.selectbox("Rush Hour?", ["Yes", "No"])
         borough = st.selectbox("Borough", ["Brooklyn", "Bronx", "Queens", "Manhattan", "Staten Island"])
 
     with col2:
-        st.subheader("🌦️ Weather")
+        st.markdown("### 🌦️ Weather")
         temp = st.slider("Temperature (°C)", -10, 40, 20)
         precipitation = st.slider("Precipitation (mm)", 0.0, 50.0, 0.0, 0.5)
         wind_speed = st.slider("Wind Speed (km/h)", 0.0, 80.0, 15.0, 1.0)
         weather = st.selectbox("Weather Condition", ["Clear", "Light Rain", "Rain", "Heavy Rain", "Snow"])
 
     with col3:
-        st.subheader("🎉 Events")
+        st.markdown("### 🎉 Events")
         has_event = st.selectbox("Event Today?", ["No", "Yes"])
         if has_event == "Yes":
             event_attendance = st.slider("Expected Attendance", 0, 300000, 10000)
@@ -410,7 +518,8 @@ elif page == "🔮 Predictions":
             event_attendance = 0
             event_impact = "Low"
 
-    if st.button("🔮 Predict Delay", type="primary", use_container_width=True):
+    st.markdown("<br/>", unsafe_allow_html=True)
+    if st.button("🔮 Run Delay Prediction Model", use_container_width=True):
         severity_map = {"Clear": 1, "Light Rain": 2, "Rain": 3, "Heavy Rain": 4, "Snow": 4, "Stormy": 5}
 
         # Simple rule-based prediction for display
@@ -459,7 +568,8 @@ elif page == "🔮 Predictions":
 # PAGE 4: MODEL INSIGHTS
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🧠 Model Insights":
-    st.markdown('<h1 class="main-header">🧠 Model Insights</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🧠 Model Insights & Interpretability</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Evaluation metrics, feature importance, and SHAP explanations</p>', unsafe_allow_html=True)
 
     results = load_results()
     fi = load_feature_importance()
@@ -469,7 +579,8 @@ elif page == "🧠 Model Insights":
 
     with tab1:
         if "regression" in results:
-            st.subheader("📈 Regression Model Comparison")
+            st.markdown("### 📈 Regression Model Comparison")
+            st.markdown("Comparing algorithms based on how accurately they predict the exact minutes of delay.")
             reg_df = results["regression"]
             st.dataframe(reg_df.style.highlight_max(subset=["R2_Score","CV_R2_Mean"], color="#90EE90")
                                       .highlight_min(subset=["MAE","RMSE"], color="#90EE90"),
@@ -499,8 +610,10 @@ elif page == "🧠 Model Insights":
             st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
+        st.markdown("### 🔑 Top Predictive Features")
+        st.markdown("The most influential factors driving transit delays based on tree-based model feature importance.")
         for task_name, task_fi in fi.items():
-            st.subheader(f"🔑 Top Features — {task_name.title()}")
+            st.markdown(f"**{task_name.title()} Model**")
             top_n = st.slider(f"Number of features ({task_name})", 5, 30, 15, key=f"fi_{task_name}")
             top_features = task_fi.head(top_n)
             fig = px.bar(top_features, x="importance", y="feature", orientation="h",
@@ -511,8 +624,12 @@ elif page == "🧠 Model Insights":
             st.plotly_chart(fig, use_container_width=True)
 
     with tab3:
-        st.subheader("💡 What Drives the Predictions?")
-        st.markdown("SHAP (SHapley Additive exPlanations) breaks down how each feature impacts the model's prediction for a specific dataset sample. A point further to the right pushes the prediction higher.")
+        st.markdown("### 💡 What Drives the Predictions?")
+        st.markdown("""
+        <div class="info-card" style="border-left-color: #10b981;">
+            <p style="margin-bottom:0;"><b>SHAP (SHapley Additive exPlanations)</b> breaks down how each feature impacts the model's prediction for a specific dataset sample. A point further to the right pushes the prediction higher.</p>
+        </div>
+        """, unsafe_allow_html=True)
         
         task_choice = st.radio("Select Model Task", list(shap_data.keys()))
         if task_choice and task_choice in shap_data:
@@ -553,15 +670,21 @@ elif page == "🔮 7-Day Forecast":
         st.plotly_chart(fig, use_container_width=True)
         
         # Show metric summary for forecast
-        st.subheader("Upcoming Forecast Summary")
+        st.markdown("### 📅 Upcoming Forecast Summary")
         forecast_only = forecast_df[forecast_df['type'] == 'Forecast'].sort_values("date")
         
         cols = st.columns(7)
         for i, row in enumerate(forecast_only.itertuples()):
             if i < 7:
                 with cols[i]:
-                    day_name = row.date.strftime("%a<br>%b %d")
-                    st.markdown(f"<div class='metric-card' style='text-align:center'><b>{day_name}</b><br><h3 style='color:#ff7f0e;margin:5px 0;'>{row.delay:.1f}m</h3></div>", unsafe_allow_html=True)
+                    day_name = row.date.strftime("%A")
+                    short_date = row.date.strftime("%b %d")
+                    st.markdown(f"""
+                    <div class="forecast-card">
+                        <div class="forecast-day">{day_name}<br/><small>{short_date}</small></div>
+                        <div class="forecast-val">{row.delay:.1f}m</div>
+                    </div>
+                    """, unsafe_allow_html=True)
     else:
         st.info("Forecast data is not available yet. Please run the forecasting pipeline.")
 
