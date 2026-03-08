@@ -654,9 +654,38 @@ elif page == "🔮 7-Day Forecast":
     forecast_df = load_forecast_data()
     
     if forecast_df is not None:
+        st.markdown("### 🌦️ What if the weather gets worse?")
+        st.markdown("Play with the scenarios below to see how a sudden storm or major event would impact the baseline forecast.")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            future_weather = st.selectbox("Simulate Weather for Next Week", ["Typical (No Change)", "Heavy Rain", "Snowstorm", "Severe Storms"])
+        with col2:
+            future_event = st.selectbox("Simulate Major City Event", ["None", "Parade / Marathon", "Major Concert / Sports Game"])
+
+        # Create a dynamic copy of the forecast
+        dynamic_forecast = forecast_df.copy()
+        
+        # Apply modifiers to the 'Forecast' type only
+        forecast_mask = dynamic_forecast['type'] == 'Forecast'
+        
+        # Apply Weather Modifiers
+        if future_weather == "Heavy Rain":
+            dynamic_forecast.loc[forecast_mask, 'delay'] += 12.5
+        elif future_weather == "Snowstorm":
+            dynamic_forecast.loc[forecast_mask, 'delay'] += 25.0
+        elif future_weather == "Severe Storms":
+            dynamic_forecast.loc[forecast_mask, 'delay'] += 18.0
+            
+        # Apply Event Modifiers
+        if future_event == "Parade / Marathon":
+            dynamic_forecast.loc[forecast_mask, 'delay'] += 15.0
+        elif future_event == "Major Concert / Sports Game":
+            dynamic_forecast.loc[forecast_mask, 'delay'] += 8.0
+
         # We only want to plot the last 90 days of history + 7 days forecast to make the chart readable
-        cutoff_date = forecast_df[forecast_df['type'] == 'Forecast']['date'].min() - pd.Timedelta(days=90)
-        plot_df = forecast_df[forecast_df['date'] >= cutoff_date]
+        cutoff_date = dynamic_forecast[dynamic_forecast['type'] == 'Forecast']['date'].min() - pd.Timedelta(days=90)
+        plot_df = dynamic_forecast[dynamic_forecast['date'] >= cutoff_date]
         
         fig = px.line(plot_df, x="date", y="delay", color="type",
                       color_discrete_map={"Historical": "#1f77b4", "Forecast": "#ff7f0e"},
@@ -673,7 +702,7 @@ elif page == "🔮 7-Day Forecast":
         
         # Show metric summary for forecast
         st.markdown("### 📅 Upcoming Forecast Summary")
-        forecast_only = forecast_df[forecast_df['type'] == 'Forecast'].sort_values("date")
+        forecast_only = dynamic_forecast[dynamic_forecast['type'] == 'Forecast'].sort_values("date")
         
         cols = st.columns(7)
         for i, row in enumerate(forecast_only.itertuples()):
@@ -681,10 +710,22 @@ elif page == "🔮 7-Day Forecast":
                 with cols[i]:
                     day_name = row.date.strftime("%A")
                     short_date = row.date.strftime("%b %d")
+                    
+                    # Highlight high delays
+                    if row.delay > 60:
+                        border_color = "#ef4444" # red
+                        val_color = "#ef4444"
+                    elif row.delay > 40:
+                        border_color = "#f59e0b" # yellow
+                        val_color = "#f59e0b"
+                    else:
+                        border_color = "#f97316" # orange (default)
+                        val_color = "#f97316"
+                        
                     st.markdown(f"""
-                    <div class="forecast-card">
+                    <div class="forecast-card" style="border-top-color: {border_color};">
                         <div class="forecast-day">{day_name}<br/><small>{short_date}</small></div>
-                        <div class="forecast-val">{row.delay:.1f}m</div>
+                        <div class="forecast-val" style="color: {val_color};">{row.delay:.1f}m</div>
                     </div>
                     """, unsafe_allow_html=True)
     else:
