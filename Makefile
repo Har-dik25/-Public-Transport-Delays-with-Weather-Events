@@ -15,7 +15,7 @@ install:
 	pip install -r requirements.txt
 
 data:
-	python download_dataset.py
+	python -m src.data_loader
 	python -m src.preprocessing
 
 features:

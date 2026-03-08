@@ -44,8 +44,7 @@ This project combines **real-world data** from three sources to understand what 
 │   ├── data_loader.py          # Data download & loading
 │   ├── preprocessing.py        # Data cleaning & merging
 │   ├── feature_engineering.py  # Feature creation
-│   ├── model.py                # ML model training
-│   └── utils.py                # Helper functions
+│   └── model.py                # ML model training
 ├── dashboard/
 │   └── app.py                  # Streamlit interactive dashboard
 ├── models/                     # Saved trained models
