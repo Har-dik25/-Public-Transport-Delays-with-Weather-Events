@@ -1,0 +1,20 @@
+# Environments
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+
+# Data (Too large for GitHub)
+data/raw/*.csv
+data/processed/*.csv
+data/processed/*.parquet
+data/processed/*.pkl
+
+# Models (Too large for GitHub)
+models/*.pkl
+models/*.joblib
+
+# OS Files
+.DS_Store
+Thumbs.db
