@@ -35,27 +35,57 @@ st.markdown("""
     html, body, [class*="css"]  {
         font-family: 'Inter', sans-serif;
     }
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     .stApp {
-        background-color: #f8f9fa;
+        background-color: #f4f7f6;
+        animation: fadeIn 0.6s ease-out forwards;
     }
     
-    /* Main Headers */
-    .main-header {
-        font-size: 2.8rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+    /* Sidebar Upgrade */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff !important;
+        border-right: 1px solid #eef2f6;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+    }
+    
+    /* Hero Banner */
+    .hero-banner {
+        background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        border-radius: 16px;
+        padding: 2.5rem 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 25px -5px rgba(142, 197, 252, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-banner::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: url('https://www.transparenttextures.com/patterns/cubes.png');
+        opacity: 0.1;
+        pointer-events: none;
+    }
+    .hero-banner .main-header {
+        font-size: 3.2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-align: center;
-        padding: 1.5rem 0 0.5rem 0;
-        margin-bottom: 0px;
+        margin-top: 0;
+        padding-top: 0;
+        margin-bottom: 0.5rem;
     }
-    .sub-header {
-        text-align: center; 
-        color: #64748b; 
-        font-size: 1.1rem;
-        font-weight: 400;
-        margin-bottom: 2rem;
+    .hero-banner .sub-header {
+        color: #334155;
+        font-weight: 500;
+        margin-bottom: 0;
+        font-size: 1.3rem;
     }
 
     /* Metric Cards (Native Streamlit override) */
@@ -220,6 +250,13 @@ except Exception as e:
     st.stop()
 
 # ─── Sidebar Navigation ───────────────────────────────────────────
+st.sidebar.markdown("""
+    <div style="text-align: center; padding: 1rem 0; border-bottom: 2px solid #f1f5f9; margin-bottom: 1.5rem;">
+        <h2 style="color: #4f46e5; font-weight: 900; margin-bottom: 0; font-size: 1.8rem;">🚍 TransitAI</h2>
+        <p style="color: #64748b; font-size: 0.95rem; margin-top: 5px; font-weight: 600;">Intelligence Dashboard</p>
+    </div>
+""", unsafe_allow_html=True)
+
 st.sidebar.title("Navigation")
 pages = ["📊 Overview", "🔍 EDA Explorer", "🔮 Predictions", "🧠 Model Insights", "🔮 7-Day Forecast"]
 page = st.sidebar.radio("Go to", pages)
@@ -252,8 +289,12 @@ st.sidebar.markdown("- 🎉 Nager.Date Holidays")
 # PAGE 1: OVERVIEW
 # ═══════════════════════════════════════════════════════════════════
 if page == "📊 Overview":
-    st.markdown('<h1 class="main-header">🚍 Public Transport Delay Analyzer</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Analyzing NYC MTA Bus Delays with Weather & Event Correlations</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-banner">
+        <h1 class="main-header">🚍 Public Transport Delay Analyzer</h1>
+        <p class="sub-header">Analyzing NYC MTA Bus Delays with Weather & Event Correlations</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-card">
@@ -328,8 +369,12 @@ if page == "📊 Overview":
 # PAGE 2: EDA EXPLORER
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🔍 EDA Explorer":
-    st.markdown('<h1 class="main-header">🔍 Explore the Data</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Discover patterns in how weather, time, and events impact bus delays.</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-banner">
+        <h1 class="main-header">🔍 Explore the Data</h1>
+        <p class="sub-header">Discover patterns in how weather, time, and events impact bus delays.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["🗺️ Spatial Analysis", "🌦️ Weather Impact", "🕐 Time Analysis", "🎉 Event Impact", "🔗 Correlations"])
 
@@ -482,8 +527,12 @@ elif page == "🔍 EDA Explorer":
 # PAGE 3: PREDICTIONS
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🔮 Predictions":
-    st.markdown('<h1 class="main-header">🔮 Predict Your Trip</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Play with different scenarios to see how our AI predicts travel delays.</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-banner">
+        <h1 class="main-header">🔮 Predict Your Trip</h1>
+        <p class="sub-header">Play with different scenarios to see how our AI predicts travel delays.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class="info-card" style="border-left-color: #ec4899;">
@@ -569,8 +618,12 @@ elif page == "🔮 Predictions":
 # PAGE 4: MODEL INSIGHTS
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🧠 Model Insights":
-    st.markdown('<h1 class="main-header">🧠 How the AI Works</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Look under the hood to see how accurate our AI is and what data it relies on.</p>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="hero-banner">
+        <h1 class="main-header">🧠 How the AI Works</h1>
+        <p class="sub-header">Look under the hood to see how accurate our AI is and what data it relies on.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     results = load_results()
     fi = load_feature_importance()
@@ -648,8 +701,12 @@ elif page == "🧠 Model Insights":
 
 # ─── PAGE 5: 7-DAY FORECAST ───────────────────────────────────────────
 elif page == "🔮 7-Day Forecast":
-    st.markdown('<h1 class="main-header">📅 7-Day Delay Forecast</h1>', unsafe_allow_html=True)
-    st.markdown("Using historical trends, our AI predicts the average delay across the entire NYC bus network for the next week.")
+    st.markdown("""
+    <div class="hero-banner">
+        <h1 class="main-header">📅 7-Day Delay Forecast</h1>
+        <p class="sub-header">Using historical trends, our AI predicts the average delay across the entire NYC bus network for the next week.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     forecast_df = load_forecast_data()
     
