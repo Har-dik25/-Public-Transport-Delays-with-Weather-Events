@@ -277,6 +277,26 @@ if len(date_range) == 2:
 else:
     filtered_df = df
 
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🎯 Advanced Filters")
+
+if "borough" in df.columns:
+    boroughs = st.sidebar.multiselect("🚇 Filter by Borough", options=sorted(df["borough"].dropna().unique()), default=[])
+    if boroughs:
+        filtered_df = filtered_df[filtered_df["borough"].isin(boroughs)]
+
+if "weather_condition" in df.columns:
+    weather_conds = st.sidebar.multiselect("🌦️ Filter by Weather", options=sorted(df["weather_condition"].dropna().unique()), default=[])
+    if weather_conds:
+        filtered_df = filtered_df[filtered_df["weather_condition"].isin(weather_conds)]
+
+if "is_weekend" in df.columns:
+    weekend_filter = st.sidebar.radio("📅 Day Type", ["All", "Weekday Only", "Weekend Only"], horizontal=True)
+    if weekend_filter == "Weekday Only":
+        filtered_df = filtered_df[filtered_df["is_weekend"] == 0]
+    elif weekend_filter == "Weekend Only":
+        filtered_df = filtered_df[filtered_df["is_weekend"] == 1]
+
 st.sidebar.markdown(f"**Records:** {len(filtered_df):,}")
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📦 Data Sources")
@@ -364,6 +384,20 @@ if page == "📊 Overview":
             fig.update_layout(template="plotly_white", height=400, showlegend=False)
             st.plotly_chart(fig, use_container_width=True)
 
+    st.markdown("---")
+    st.subheader("🗂️ Interactive Data Explorer")
+    st.markdown("Search, sort, and download the raw data driving these insights. (Showing first 1,000 records)")
+    
+    st.dataframe(filtered_df.head(1000), use_container_width=True)
+    
+    csv = filtered_df.head(1000).to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="⬇️ Download This Data (CSV)",
+        data=csv,
+        file_name="transit_insights_data.csv",
+        mime="text/csv",
+    )
+
 
 # ═══════════════════════════════════════════════════════════════════
 # PAGE 2: EDA EXPLORER
@@ -376,7 +410,7 @@ elif page == "🔍 EDA Explorer":
     </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🗺️ Spatial Analysis", "🌦️ Weather Impact", "🕐 Time Analysis", "🎉 Event Impact", "🔗 Correlations"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🗺️ Spatial Analysis", "🌦️ Weather Impact", "🕐 Time Analysis", "🎉 Event Impact", "🔗 Correlations", "🎛️ Custom Plotter"])
 
     with tab1:
         st.subheader("Geospatial Map of Average Delays by Borough")
@@ -521,6 +555,41 @@ elif page == "🔍 EDA Explorer":
                            aspect="auto", zmin=-1, zmax=1)
             fig.update_layout(height=600)
             st.plotly_chart(fig, use_container_width=True)
+
+    with tab6:
+        st.subheader("Build Your Own Chart")
+        st.markdown("Select any variables from the dataset to automatically build custom visualizations on the fly!")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns.tolist()
+        cat_cols = filtered_df.select_dtypes(include=['object', 'category']).columns.tolist()
+        all_cols = numeric_cols + cat_cols
+        
+        with col1:
+            x_axis = st.selectbox("X-Axis Variable", options=all_cols, index=min(len(all_cols)-1, all_cols.index('date') if 'date' in all_cols else 0))
+        with col2:
+            y_axis = st.selectbox("Y-Axis Variable", options=numeric_cols, index=min(len(numeric_cols)-1, numeric_cols.index('delay_minutes') if 'delay_minutes' in numeric_cols else 0))
+        with col3:
+            color_by = st.selectbox("Color Grouping (Optional)", options=["None"] + cat_cols, index=0)
+            
+        chart_type = st.radio("Select Chart Type", ["Scatter Plot", "Box Plot", "Average Bar Chart"], horizontal=True)
+        
+        color_arg = color_by if color_by != "None" else None
+        
+        # Limit to 5000 points so the browser doesn't freeze
+        plot_sample = filtered_df.sample(min(5000, len(filtered_df)))
+        
+        if chart_type == "Scatter Plot":
+            fig = px.scatter(plot_sample, x=x_axis, y=y_axis, color=color_arg, opacity=0.6)
+        elif chart_type == "Box Plot":
+            fig = px.box(plot_sample, x=x_axis, y=y_axis, color=color_arg)
+        elif chart_type == "Average Bar Chart":
+            agg_df = plot_sample.groupby(x_axis)[y_axis].mean().reset_index()
+            fig = px.bar(agg_df, x=x_axis, y=y_axis, color=x_axis)
+            
+        fig.update_layout(template="plotly_white", height=500, hovermode="closest")
+        st.plotly_chart(fig, use_container_width=True)
 
 
 # ═══════════════════════════════════════════════════════════════════
