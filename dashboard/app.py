@@ -257,8 +257,8 @@ if page == "📊 Overview":
     
     st.markdown("""
     <div class="info-card">
-        <h4 style="margin-top:0;">📊 Network Health Overview</h4>
-        <p style="color:#64748b; margin-bottom:0;">Key performance indicators based on historical delay data, weather conditions, and city-wide events.</p>
+        <h4 style="margin-top:0;">👋 Welcome to the NYC Transit Analyzer!</h4>
+        <p style="color:#64748b; margin-bottom:0;">This tool helps you understand what causes bus delays in New York City. Explore historical data, see how weather affects travel times, or use our AI to predict future delays. Use the menu on the left to navigate!</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -328,7 +328,8 @@ if page == "📊 Overview":
 # PAGE 2: EDA EXPLORER
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🔍 EDA Explorer":
-    st.markdown('<h1 class="main-header">🔍 Exploratory Data Analysis</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🔍 Explore the Data</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Discover patterns in how weather, time, and events impact bus delays.</p>', unsafe_allow_html=True)
 
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["🗺️ Spatial Analysis", "🌦️ Weather Impact", "🕐 Time Analysis", "🎉 Event Impact", "🔗 Correlations"])
 
@@ -481,13 +482,13 @@ elif page == "🔍 EDA Explorer":
 # PAGE 3: PREDICTIONS
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🔮 Predictions":
-    st.markdown('<h1 class="main-header">🔮 Delay Prediction</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Enter conditions below to predict whether a bus will be delayed and by how much.</p>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🔮 Predict Your Trip</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Play with different scenarios to see how our AI predicts travel delays.</p>', unsafe_allow_html=True)
 
     st.markdown("""
     <div class="info-card" style="border-left-color: #ec4899;">
-        <h4 style="margin-top:0;">🤖 Machine Learning Inference</h4>
-        <p style="color:#64748b; margin-bottom:0;">Adjust the parameters below to run real-time predictions against the trained Random Forest and Gradient Boosting models.</p>
+        <h4 style="margin-top:0;">🤖 AI Prediction Engine</h4>
+        <p style="color:#64748b; margin-bottom:0;">Change the time, weather, and event options below. Our AI model will instantly calculate the expected delay based on thousands of past trips.</p>
     </div>
     <br/>
     """, unsafe_allow_html=True)
@@ -568,19 +569,19 @@ elif page == "🔮 Predictions":
 # PAGE 4: MODEL INSIGHTS
 # ═══════════════════════════════════════════════════════════════════
 elif page == "🧠 Model Insights":
-    st.markdown('<h1 class="main-header">🧠 Model Insights & Interpretability</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Evaluation metrics, feature importance, and SHAP explanations</p>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🧠 How the AI Works</h1>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Look under the hood to see how accurate our AI is and what data it relies on.</p>', unsafe_allow_html=True)
 
     results = load_results()
     fi = load_feature_importance()
     shap_data = load_shap_data()
 
-    tab1, tab2, tab3 = st.tabs(["📈 Model Comparison", "🔑 Feature Importance", "🧠 Prediction Explanation (SHAP)"])
+    tab1, tab2, tab3 = st.tabs(["📊 AI Accuracy Scores", "🔑 Most Important Factors", "💡 AI Reasoning"])
 
     with tab1:
         if "regression" in results:
-            st.markdown("### 📈 Regression Model Comparison")
-            st.markdown("Comparing algorithms based on how accurately they predict the exact minutes of delay.")
+            st.markdown("### ⏱️ Predicting Exact Delay Minutes")
+            st.markdown("We tested several AI models. The table below shows their performance. **Lower average errors are better**, while a **higher R² score means the model is more accurate**.")
             reg_df = results["regression"]
             st.dataframe(reg_df.style.highlight_max(subset=["R2_Score","CV_R2_Mean"], color="#90EE90")
                                       .highlight_min(subset=["MAE","RMSE"], color="#90EE90"),
@@ -596,7 +597,8 @@ elif page == "🧠 Model Insights":
             st.plotly_chart(fig, use_container_width=True)
 
         if "classification" in results:
-            st.subheader("🎯 Classification Model Comparison")
+            st.markdown("### 🚦 Predicting 'Delayed' vs 'On-Time'")
+            st.markdown("Here, the models just try to guess if the bus will be delayed or not. **Higher Accuracy and F1 Scores mean the model makes fewer mistakes.**")
             cls_df = results["classification"]
             st.dataframe(cls_df.style.highlight_max(subset=["Accuracy","F1_Score","CV_F1_Mean"], color="#90EE90"),
                          use_container_width=True)
@@ -610,8 +612,8 @@ elif page == "🧠 Model Insights":
             st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
-        st.markdown("### 🔑 Top Predictive Features")
-        st.markdown("The most influential factors driving transit delays based on tree-based model feature importance.")
+        st.markdown("### 🔑 What causes the most delays?")
+        st.markdown("According to our AI, these are the most important factors that determine if a bus will be late. Longer bars mean the factor has a bigger impact.")
         for task_name, task_fi in fi.items():
             st.markdown(f"**{task_name.title()} Model**")
             top_n = st.slider(f"Number of features ({task_name})", 5, 30, 15, key=f"fi_{task_name}")
@@ -624,10 +626,10 @@ elif page == "🧠 Model Insights":
             st.plotly_chart(fig, use_container_width=True)
 
     with tab3:
-        st.markdown("### 💡 What Drives the Predictions?")
+        st.markdown("### 💡 How the AI makes decisions")
         st.markdown("""
         <div class="info-card" style="border-left-color: #10b981;">
-            <p style="margin-bottom:0;"><b>SHAP (SHapley Additive exPlanations)</b> breaks down how each feature impacts the model's prediction for a specific dataset sample. A point further to the right pushes the prediction higher.</p>
+            <p style="margin-bottom:0;"><b>Explainable AI:</b> This chart shows exactly how much each factor (like rain, snow, or rush hour) adds to or subtracts from the delay for a group of specific trips. Points further to the right mean a longer delay.</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -646,8 +648,8 @@ elif page == "🧠 Model Insights":
 
 # ─── PAGE 5: 7-DAY FORECAST ───────────────────────────────────────────
 elif page == "🔮 7-Day Forecast":
-    st.markdown('<h1 class="main-header">🔮 7-Day Delay Trend Forecast</h1>', unsafe_allow_html=True)
-    st.markdown("This section utilizes a **Holt-Winters Exponential Smoothing** time-series model to predict the average transport delay for the next 7 days across the entire aggregated NYC network.")
+    st.markdown('<h1 class="main-header">📅 7-Day Delay Forecast</h1>', unsafe_allow_html=True)
+    st.markdown("Using historical trends, our AI predicts the average delay across the entire NYC bus network for the next week.")
     
     forecast_df = load_forecast_data()
     
