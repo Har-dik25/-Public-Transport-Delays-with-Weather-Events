@@ -1,116 +1,87 @@
-# 🚍 Public Transport Delay with Weather & Events
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white" />
+  <img src="https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" />
+  <img src="https://img.shields.io/badge/Plotly-239120?style=for-the-badge&logo=plotly&logoColor=white" />
+  <img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white" />
+</div>
 
-An end-to-end data science project that analyzes NYC MTA bus delays and their correlation with weather conditions and local events.
+<h1 align="center">🚍 TransitAI: Public Transport Delay Analyzer</h1>
 
-## 📌 Overview
+<p align="center">
+  <b>An end-to-end Machine Learning project analyzing and predicting NYC MTA bus delays using historical weather and city event data.</b>
+</p>
 
-This project combines **real-world data** from three sources to understand what drives public transport delays:
+---
 
-| Data Source | Description | Records |
-|---|---|---|
-| **NYC Open Data** | MTA Bus Breakdown & Delays | 150,000+ |
-| **Open-Meteo API** | Historical weather for NYC (2023-2024) | 731 days |
-| **Nager.Date + NYC Events** | US holidays + recurring local pro sports | 404 events |
+## 📖 What the project does
 
-## 🔬 Key Findings
+**TransitAI** is a comprehensive data science portfolio project built to tackle a real-world problem: predicting public transportation delays before they happen.
 
-- **89.7%** of trips experienced delays greater than 15 minutes
-- **Heavy Traffic** remains the #1 delay reason
-- **SMOTE** oversampling achieved perfectly balanced classes for training, elevating model robustness
-- **Model Explainability (SHAP)** reveals exactly how weather and events drive predictions
-- **Geospatial Hotspots** mapped across NYC boroughs.
-- **Time-Series Forecasting** successfully predicts 7-day aggregate delay trends
-- **Production Optimized** using `.parquet` and `.joblib`, reducing app memory footprint by 95%
--2. **Geospatial Mapping:** Plotly scatter_mapbox visualizes delay severity by NYC borough.
-3. **Delay Prediction Form:** Interactive inference using the Random Forest model.
-4. **Model Insights & SHAP:** Visualize Feature Importance and SHAP values for model explainability.
-5. **🔮 7-Day Forecast:** Holt-Winters time-series forecast for upcoming network delays.
+The project ingests simulated records of NYC MTA bus trips and enriches them with historical weather data (from Open-Meteo) and major city events (concerts, marathons). Using supervised Machine Learning models (Random Forest, Gradient Boosting), the system learns the complex correlations between heavy rain, rush hour, and major events to accurately predict whether a future bus trip will be delayed, and by exactly how many minutes.
 
-### Advanced MLOps & Production
-- 🧪 **Unit Testing:** `pytest` suite added for data pipeline integrity.
-- ⚙️ **Dockerized:** Ready for cloud deployment via `Dockerfile`.
-- 🗜️ **Optimized:** Data stored in highly compressed `.parquet` format (90% size reduction) and models compressed via joblib `zlib` for ultra-fast, low-memory inference on cloud platforms.
-- **Time-Series Forecasting** successfully predicts 7-day aggregate delay trends
-- **Production Optimized** using `.parquet` and `.joblib`, reducing app memory footprint by 95%
+Finally, the project exposes these insights through a highly interactive, beautifully designed **Streamlit Dashboard** that allows users to explore the raw data, build custom charts, and run "What-If" predictive scenarios.
 
-## 🏗️ Project Structure
+## 🚀 Why the project is useful
 
-```
-├── data/
-│   ├── raw/                    # Original downloaded datasets
-│   └── processed/              # Cleaned & merged datasets
-├── notebooks/                  # Jupyter notebooks for analysis
-├── src/
-│   ├── data_loader.py          # Data download & loading
-│   ├── preprocessing.py        # Data cleaning & merging
-│   ├── feature_engineering.py  # Feature creation
-│   └── model.py                # ML model training
-├── dashboard/
-│   └── app.py                  # Streamlit interactive dashboard
-├── models/                     # Saved trained models
-├── reports/figures/            # Saved plots
-├── download_dataset.py         # Script to download real data
-├── requirements.txt            # Python dependencies
-└── README.md
-```
+1. **For Commuters:** Provides actionable insights into how severe weather or city-wide events might compound their travel time.
+2. **For Transit Authorities:** Demonstrates how explainable AI (using SHAP values) can be used to isolate the root causes of systemic transport unreliability.
+3. **For Data Science Portfolios:** Showcases an applicant's ability to build an entire end-to-end MLOps pipeline. It features automated tests (`pytest`), efficient data storage (`.parquet`), code modularity, explainable AI (`SHAP`), and robust visualizations.
 
-## 🚀 Quick Start
+## 🛠️ How to get started
 
-### 1. Clone & Setup
+### 1. Prerequisites
+Ensure you have **Python 3.10+** installed on your system. 
+
+### 2. Clone the Repository
 ```bash
-git clone <repo-url>
-cd "Public Transport Delay With weather and events"
+git clone https://github.com/Har-dik25/-Public-Transport-Delays-with-Weather-Events.git
+cd -Public-Transport-Delays-with-Weather-Events
+```
+
+### 3. Install Dependencies
+It is recommended to use a virtual environment.
+```bash
 python -m venv venv
-venv\Scripts\activate        # Windows
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Download Data
+### 4. Run the Data Pipeline (Optional)
+The pre-processed data and trained ML models are already included in the repository, but you can regenerate them from scratch using the included Makefile:
 ```bash
-python download_dataset.py
+# 1. Download raw data sets and merge them
+make data
+
+# 2. Create ML features (Rush hour, Severity Index, etc.)
+make features
+
+# 3. Train the AI Models & generate explanations (takes ~1-2 mins)
+make train
 ```
 
-### 3. Run Pipeline
+### 5. Launch the Intelligence Dashboard
+Fire up the Streamlit UI to explore the interactive dashboard:
 ```bash
-python -m src.preprocessing
-python -m src.feature_engineering
-python -m src.model
+python -m streamlit run dashboard/app.py
 ```
+> The dashboard will open automatically in your browser at `http://localhost:8501`.
 
-### 4. Launch Dashboard
-```bash
-streamlit run dashboard/app.py
-```
+---
 
-## 🛠️ Tech Stack
+## 🧠 Key Features of the Dashboard
 
-| Category | Tools |
-|---|---|
-| **Language** | Python 3.10+ |
-| **Data** | Pandas, NumPy |
-| **ML** | Scikit-learn, XGBoost, LightGBM |
-| **Visualization** | Matplotlib, Seaborn, Plotly |
-| **Dashboard** | Streamlit |
-| **Data Sources** | NYC Open Data, Open-Meteo API, Nager.Date API |
+* **📊 Overview Metrics:** High-level KPIs showing total records, average delays, and percentage of trips delayed by bad weather.
+* **🎛️ Interactive Data Explorer:** Sort, filter, and download the raw `.parquet` dataset powering the ML engine natively inside the app.
+* **🔍 Custom Plotter:** Build your own interactive Scatter Plots, Box Plots, and Bar Charts on the fly by selecting X, Y, and Color variables.
+* **🔮 Trip Predictor:** A "What-If" engine where you can dial in specific weather temperatures, rainfall amounts, and event attendance parameters to generate an instant delay prediction.
+* **💡 Model Insights (SHAP):** An Explainable AI visualization layer that empirically proves *why* the model made its decision, isolating the exact minute penalty added by "Heavy Rain" vs "Rush Hour".
+* **📅 7-Day Forecast:** An interactive preview of the week ahead, capable of injecting hypothetical "Snowstorms" to see how the delay graph spikes dynamically.
 
-## 📊 Model Results
+## 🤝 Getting Help & Contributing 
+If you encounter any bugs, have questions, or want to suggest an improvement, please open a new [Issue](https://github.com/Har-dik25/-Public-Transport-Delays-with-Weather-Events/issues) on this repository!
 
-### Regression (Predicting delay duration)
-| Model | MAE | RMSE | R² |
-|---|---|---|---|
-| Linear Regression | 16.57 | 20.11 | 0.18 |
-| Decision Tree | 8.94 | 14.98 | 0.54 |
-| **Random Forest** | **8.60** | **13.31** | **0.64** |
-| Gradient Boosting | 10.76 | 14.72 | 0.56 |
+Pull Requests are always welcome.
 
-### Classification (Predicting if delayed >15 min — using SMOTE)
-| Model | Accuracy | F1 Score |
-|---|---|---|
-| Logistic Regression | 69.1% | 0.75 |
-| **Decision Tree** | **89.5%** | **0.90** |
-| Random Forest | 88.7% | 0.89 |
-| Gradient Boosting | 89.4% | 0.90 |
-
-## 📝 License
-
-This project uses publicly available open data. See data sources above for individual data licensing.
+## 👨‍💻 Maintainers
+This project was built and is currently maintained by **[Har-dik25](https://github.com/Har-dik25)**.

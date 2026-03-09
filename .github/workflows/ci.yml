@@ -26,9 +26,8 @@ jobs:
         
     - name: Run Data Pipeline
       run: |
-        python download_dataset.py
-        python src/preprocessing.py
-        python src/feature_engineering.py
+        make data
+        make features
         
     - name: Test with pytest
       run: |
