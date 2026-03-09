@@ -24,6 +24,12 @@ jobs:
         pip install -r requirements.txt
         pip install pytest
         
+    - name: Run Data Pipeline
+      run: |
+        python download_dataset.py
+        python src/preprocessing.py
+        python src/feature_engineering.py
+        
     - name: Test with pytest
       run: |
         pytest tests/ -v
